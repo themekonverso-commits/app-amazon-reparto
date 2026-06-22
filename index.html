@@ -16,10 +16,39 @@
       --green: #16a34a;
       --green-bright: #22c55e;
       --amber: #d97706;
+      --red: #dc2626;
       --text: #e2e8f0;
       --muted: #64748b;
       --white: #f8fafc;
+      --note-text: #fcd9a8;
+      --overlay-bg: rgba(2, 6, 16, .8);
     }
+
+    /* ---------- LIGHT THEME ---------- */
+    :root.light {
+      --bg: #eef2f7;
+      --surface: #ffffff;
+      --card: #ffffff;
+      --border: #cbd5e1;
+      --accent: #2563eb;
+      --green: #16a34a;
+      --green-bright: #15803d;
+      --amber: #b45309;
+      --red: #dc2626;
+      --text: #1e293b;
+      --muted: #64748b;
+      --white: #0f172a;
+      --note-text: #92400e;
+      --overlay-bg: rgba(15, 23, 42, .55);
+    }
+    :root.light .card,
+    :root.light .stop-card,
+    :root.light .info-card,
+    :root.light .route-btn,
+    :root.light .list-item,
+    :root.light .icon-btn,
+    :root.light .maps-btn,
+    :root.light .nav-controls .arrow { box-shadow: 0 1px 3px rgba(15,23,42,.08); }
 
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
@@ -29,6 +58,7 @@
       font-family: -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", Roboto, sans-serif;
       line-height: 1.4;
       -webkit-font-smoothing: antialiased;
+      transition: background .2s, color .2s;
     }
 
     body { min-height: 100vh; }
@@ -40,26 +70,22 @@
       display: flex;
       flex-direction: column;
       background: var(--bg);
+      position: relative;
     }
 
-    button {
-      font-family: inherit;
-      cursor: pointer;
-      border: none;
-      color: var(--text);
-      font-size: 1rem;
-    }
+    button { font-family: inherit; cursor: pointer; border: none; color: var(--text); font-size: 1rem; }
 
     .hidden { display: none !important; }
 
     /* ---------- UPLOAD ---------- */
+    .mini-bar { display: flex; justify-content: flex-end; padding: 12px 16px 0; }
     .upload {
       flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 28px 20px;
+      padding: 12px 20px 40px;
       text-align: center;
       gap: 8px;
     }
@@ -72,7 +98,7 @@
       border: 2px dashed var(--border);
       border-radius: 20px;
       background: var(--surface);
-      padding: 44px 20px;
+      padding: 40px 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -84,117 +110,83 @@
     .dropzone .dz-title { color: var(--white); font-weight: 600; font-size: 1.05rem; }
     .dropzone .dz-hint { color: var(--muted); font-size: .85rem; }
     .dropzone .dz-btn {
-      margin-top: 8px;
-      background: var(--accent);
-      color: var(--white);
-      font-weight: 600;
-      padding: 14px 28px;
-      border-radius: 14px;
-      font-size: 1rem;
+      margin-top: 8px; background: var(--accent); color: #fff;
+      font-weight: 600; padding: 14px 28px; border-radius: 14px; font-size: 1rem;
     }
     input[type="file"] { display: none; }
     .error-msg { color: #f87171; font-size: .9rem; margin-top: 14px; min-height: 1.2em; }
 
-    /* ---------- HEADER (shared) ---------- */
-    .topbar {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 14px 16px;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 10;
+    /* ---------- CONTINUE LIST ---------- */
+    .continue-wrap { width: 100%; margin-top: 26px; text-align: left; }
+    .continue-wrap h3 { color: var(--muted); font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 10px; }
+    .continue-item {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 14px; margin-bottom: 8px; width: 100%;
     }
-    .topbar .back {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 10px 14px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-shrink: 0;
+    .continue-go { flex: 1; display: flex; align-items: center; gap: 12px; text-align: left; background: none; padding: 0; }
+    .continue-badge {
+      width: 46px; height: 46px; border-radius: 12px; flex-shrink: 0;
+      background: var(--accent); color: #fff; font-weight: 800; font-size: 1rem;
+      display: flex; align-items: center; justify-content: center;
     }
-    .topbar .title {
-      flex: 1;
-      font-weight: 700;
-      color: var(--white);
-      font-size: 1.05rem;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .topbar .list-btn {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 10px 16px;
-      font-weight: 600;
-      flex-shrink: 0;
+    .continue-info { flex: 1; overflow: hidden; }
+    .continue-title { color: var(--white); font-weight: 700; }
+    .continue-sub { color: var(--muted); font-size: .82rem; margin-top: 2px; }
+    .continue-del {
+      flex-shrink: 0; width: 36px; height: 36px; border-radius: 10px;
+      background: var(--surface); border: 1px solid var(--border); color: var(--muted); font-size: 1rem;
     }
 
-    /* ---------- SELECT ---------- */
-    .select-wrap { flex: 1; padding: 20px 16px 40px; }
-    .select-wrap h2 { color: var(--white); font-size: 1.4rem; margin-bottom: 4px; }
-    .select-wrap .count { color: var(--muted); font-size: .92rem; margin-bottom: 20px; }
-    .route-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
+    /* ---------- TOPBAR ---------- */
+    .topbar {
+      display: flex; align-items: center; gap: 8px;
+      padding: 12px 12px; background: var(--surface);
+      border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10;
     }
+    .topbar .back {
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 10px 12px; font-weight: 600; display: flex; align-items: center; gap: 5px;
+      flex-shrink: 1; min-width: 0; max-width: 46%;
+    }
+    .topbar .back span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--white); }
+    .tb-actions { display: flex; gap: 6px; margin-left: auto; flex-shrink: 0; }
+    .icon-btn {
+      width: 42px; height: 42px; border-radius: 12px;
+      background: var(--card); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+    }
+    .icon-btn:active { background: var(--accent); border-color: var(--accent); }
+
+    /* ---------- SELECT ---------- */
+    .select-wrap { flex: 1; padding: 16px 16px 40px; }
+    .select-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
+    .select-wrap h2 { color: var(--white); font-size: 1.4rem; }
+    .select-wrap .count { color: var(--muted); font-size: .92rem; margin-bottom: 20px; }
+    .route-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
     .route-btn {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 20px 8px;
-      font-weight: 700;
-      font-size: 1.1rem;
-      color: var(--white);
+      background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+      padding: 20px 8px; font-weight: 700; font-size: 1.1rem; color: var(--white);
       transition: background .12s, border-color .12s;
     }
-    .route-btn:active { background: var(--accent); border-color: var(--accent); }
+    .route-btn:active { background: var(--accent); border-color: var(--accent); color: #fff; }
     .change-file {
-      margin-top: 26px;
-      width: 100%;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 14px;
-      font-weight: 600;
-      color: var(--muted);
+      margin-top: 26px; width: 100%; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 14px; padding: 14px;
+      font-weight: 600; color: var(--muted);
     }
 
     /* ---------- NAVIGATE ---------- */
     .nav-wrap { flex: 1; padding: 16px 16px 28px; display: flex; flex-direction: column; gap: 14px; }
-
     .progress-block { display: flex; flex-direction: column; gap: 8px; }
-    .progress-bar {
-      width: 100%;
-      height: 10px;
-      background: var(--card);
-      border-radius: 999px;
-      overflow: hidden;
-    }
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--green), var(--green-bright));
-      border-radius: 999px;
-      transition: width .25s ease;
-    }
+    .progress-bar { width: 100%; height: 10px; background: var(--card); border: 1px solid var(--border); border-radius: 999px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--green-bright)); border-radius: 999px; transition: width .25s ease; }
     .progress-text { font-size: .9rem; color: var(--muted); text-align: center; }
     .progress-text.done { color: var(--green-bright); font-weight: 700; }
 
-    .stop-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 22px;
-      transition: background .2s, border-color .2s;
-    }
+    .stop-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 22px; transition: background .2s, border-color .2s; }
     .stop-card.delivered { background: rgba(22,163,74,.16); border-color: var(--green); }
+    .stop-card.incidence { background: rgba(217,119,6,.15); border-color: var(--amber); }
     .stop-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 14px; }
     .stop-num { font-size: 3.2rem; font-weight: 800; color: var(--white); line-height: 1; }
     .stop-of { color: var(--muted); font-size: 1rem; }
@@ -203,121 +195,105 @@
     .stop-postal { color: var(--muted); font-size: 1rem; }
     .stop-zone { color: var(--muted); font-size: .85rem; margin-top: 2px; }
 
-    .info-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 16px;
+    .status-banner { margin-top: 12px; padding: 10px 12px; border-radius: 12px; font-weight: 600; font-size: .95rem; }
+    .status-banner.incidence { background: rgba(220,38,38,.16); border: 1px solid var(--red); color: #fca5a5; }
+
+    .group-banner {
+      display: flex; align-items: center; gap: 8px; margin-top: 14px;
+      background: rgba(59,130,246,.14); border: 1px solid var(--accent);
+      border-radius: 12px; padding: 10px 12px; color: var(--white); font-weight: 700; font-size: .95rem;
     }
+    .pkg-list { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+    .pkg-item {
+      display: flex; align-items: center; gap: 10px; text-align: left;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 9px 11px;
+    }
+    .pkg-item.current { border-color: var(--accent); }
+    .pkg-ico { font-size: 1rem; flex-shrink: 0; }
+    .pkg-stop { font-weight: 700; color: var(--muted); min-width: 34px; }
+    .pkg-trk { font-family: ui-monospace, Menlo, monospace; font-size: .85rem; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .info-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
     .info-label { color: var(--muted); font-size: .78rem; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
-    .tracking-id {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--white);
-      word-break: break-all;
-    }
+    .tracking-id { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 1.5rem; font-weight: 700; color: var(--white); word-break: break-all; }
     .time-row { display: flex; align-items: center; gap: 10px; }
     .time-row .ico { font-size: 1.5rem; }
     .time-val { font-size: 1.25rem; font-weight: 700; color: var(--white); }
 
-    .note-card {
-      background: rgba(217,119,6,.15);
-      border: 1px solid var(--amber);
-      border-radius: 16px;
-      padding: 16px;
-      display: flex;
-      gap: 10px;
-    }
+    .note-card { background: rgba(217,119,6,.15); border: 1px solid var(--amber); border-radius: 16px; padding: 16px; display: flex; gap: 10px; }
     .note-card .ico { font-size: 1.4rem; flex-shrink: 0; }
-    .note-card .note-text { color: #fcd9a8; font-size: 1rem; }
+    .note-card .note-text { color: var(--note-text); font-size: 1rem; }
 
-    .maps-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 16px;
-      font-weight: 600;
-      font-size: 1.05rem;
-      color: var(--white);
-      text-decoration: none;
+    .action-btn {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      border-radius: 16px; padding: 16px; font-weight: 700; font-size: 1.05rem; text-decoration: none; width: 100%;
     }
+    .nav-btn { background: var(--accent); color: #fff; }
+    .nav-btn:active { filter: brightness(1.1); }
+    .maps-btn { background: var(--surface); border: 1px solid var(--border); color: var(--white); }
     .maps-btn:active { background: var(--card); }
 
-    .deliver-btn {
-      background: var(--green);
-      color: var(--white);
-      font-weight: 800;
-      font-size: 1.3rem;
-      padding: 20px;
-      border-radius: 18px;
-      width: 100%;
-    }
+    .deliver-btn { background: var(--green); color: #fff; font-weight: 800; font-size: 1.3rem; padding: 20px; border-radius: 18px; width: 100%; }
     .deliver-btn:active { background: var(--green-bright); }
     .deliver-btn.undo { background: var(--card); border: 1px solid var(--border); color: var(--text); font-weight: 600; font-size: 1.1rem; }
+    .deliver-group-btn { background: rgba(22,163,74,.18); border: 1px solid var(--green); color: var(--green-bright); font-weight: 700; font-size: 1rem; padding: 14px; border-radius: 14px; width: 100%; }
 
-    .nav-controls {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .nav-controls .arrow {
-      flex: 1;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 18px;
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: var(--white);
-    }
+    .incidence-toggle { background: var(--surface); border: 1px solid var(--amber); color: var(--amber); font-weight: 700; font-size: 1rem; padding: 14px; border-radius: 14px; width: 100%; }
+    .incidence-menu { display: flex; flex-direction: column; gap: 8px; padding: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; }
+    .reason-btn { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; font-weight: 600; text-align: left; }
+    .reason-btn:active { border-color: var(--amber); }
+    .clear-status-btn { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 12px; padding: 12px; width: 100%; font-weight: 600; }
+
+    .nav-controls { display: flex; align-items: center; gap: 12px; }
+    .nav-controls .arrow { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 18px; font-size: 1.3rem; font-weight: 700; color: var(--white); }
     .nav-controls .arrow:disabled { opacity: .35; }
-    .nav-controls .pos {
-      flex-shrink: 0;
-      min-width: 80px;
-      text-align: center;
-      color: var(--muted);
-      font-weight: 700;
-      font-size: 1rem;
-    }
+    .nav-controls .pos { flex-shrink: 0; min-width: 80px; text-align: center; color: var(--muted); font-weight: 700; font-size: 1rem; }
+
+    .reset-link { background: none; border: none; color: var(--muted); font-size: .85rem; text-decoration: underline; padding: 8px; align-self: center; }
 
     /* ---------- LIST ---------- */
     .list-wrap { flex: 1; padding: 12px 12px 32px; display: flex; flex-direction: column; gap: 8px; }
-    .list-item {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 14px;
-      text-align: left;
-      width: 100%;
-    }
-    .list-item.delivered { opacity: .5; }
-    .list-circle {
-      flex-shrink: 0;
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 1.05rem;
-      color: var(--white);
-    }
-    .list-item.delivered .list-circle { background: var(--green); border-color: var(--green); }
+    .list-item { display: flex; align-items: center; gap: 14px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px; text-align: left; width: 100%; }
+    .list-item.delivered { opacity: .55; }
+    .list-item.incidence { border-color: var(--amber); }
+    .list-circle { flex-shrink: 0; width: 42px; height: 42px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.05rem; color: var(--white); }
+    .list-item.delivered .list-circle { background: var(--green); border-color: var(--green); color: #fff; }
+    .list-item.incidence .list-circle { background: var(--amber); border-color: var(--amber); color: #fff; }
     .list-body { flex: 1; overflow: hidden; }
     .list-addr { color: var(--white); font-weight: 600; font-size: 1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .list-meta { color: var(--muted); font-size: .82rem; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .list-meta .mono { font-family: ui-monospace, Menlo, monospace; }
+    .list-badge { flex-shrink: 0; font-size: .72rem; color: var(--muted); background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 3px 7px; }
+
+    /* ---------- SUMMARY ---------- */
+    .summary-wrap { flex: 1; padding: 18px 16px 40px; display: flex; flex-direction: column; gap: 14px; }
+    .summary-wrap h2 { color: var(--white); font-size: 1.5rem; }
+    .sum-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .sum-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+    .sum-card.full { grid-column: 1 / -1; }
+    .sum-num { font-size: 2rem; font-weight: 800; color: var(--white); line-height: 1.1; }
+    .sum-num.green { color: var(--green-bright); }
+    .sum-num.amber { color: var(--amber); }
+    .sum-label { color: var(--muted); font-size: .82rem; margin-top: 4px; }
+    .sum-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .sum-row:last-child { border-bottom: none; }
+    .sum-row .k { color: var(--muted); }
+    .sum-row .v { color: var(--white); font-weight: 600; }
+
+    /* ---------- SEARCH OVERLAY ---------- */
+    .overlay { position: fixed; inset: 0; background: var(--overlay-bg); z-index: 50; display: flex; justify-content: center; }
+    .overlay-inner { width: 100%; max-width: 480px; background: var(--bg); display: flex; flex-direction: column; max-height: 100vh; }
+    .search-bar { display: flex; gap: 8px; padding: 14px 14px; background: var(--surface); border-bottom: 1px solid var(--border); }
+    .search-bar input { flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; color: var(--text); font-size: 1rem; font-family: ui-monospace, Menlo, monospace; }
+    .search-bar input:focus { outline: none; border-color: var(--accent); }
+    .search-close { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 0 16px; font-weight: 700; }
+    .search-results { overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+    .search-result { display: flex; align-items: center; gap: 12px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: left; width: 100%; }
+    .sr-stop { width: 44px; height: 44px; flex-shrink: 0; border-radius: 10px; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--white); }
+    .sr-body { flex: 1; overflow: hidden; }
+    .sr-trk { display: block; font-family: ui-monospace, Menlo, monospace; color: var(--white); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .sr-addr { display: block; color: var(--muted); font-size: .82rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .search-empty { color: var(--muted); text-align: center; padding: 30px 16px; }
   </style>
 </head>
 <body>
@@ -326,77 +302,129 @@
   <script>
   "use strict";
 
-  // ---------------- State (in-memory only) ----------------
+  // ===================== Constants =====================
+  var LS_THEME = "rutas_theme";
+  var RT_PREFIX = "rutas_route_";
+  var INCIDENCE_REASONS = ["Cliente ausente", "Dirección incorrecta", "Rechazado por el cliente", "Otro"];
+
+  // ===================== State (in-memory) =====================
   var state = {
-    view: "upload",        // upload | select | navigate | list
+    view: "upload",        // upload | select | navigate | list | summary
+    theme: "dark",
     fileName: "",
-    routes: [],            // [{ sheetName, label, stops: [...] }]
+    routes: [],
     routeIndex: -1,
     currentIndex: 0,
-    error: ""
+    error: "",
+    searchOpen: false,
+    searchQuery: "",
+    incidenceOpen: false
   };
 
   var app = document.getElementById("app");
 
-  // ---------------- Helpers ----------------
+  // ===================== Safe localStorage =====================
+  function safeGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function safeSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function safeDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  // ===================== Helpers =====================
   function escapeHtml(str) {
     if (str === null || str === undefined) return "";
     return String(str)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
   }
-
   function cleanText(v) {
     if (v === null || v === undefined) return "";
     var s = String(v).trim();
     if (s.toLowerCase() === "nan" || s === "") return "";
     return s;
   }
-
   function cleanTimeWindow(v) {
     var s = cleanText(v);
     if (!s) return "";
-    // "08:00:00 - 14:00:00" -> "08:00 - 14:00"
     return s.replace(/(\d{1,2}:\d{2}):\d{2}/g, "$1");
   }
-
   function cleanRouteLabel(sheetName) {
-    // sequencedRoute_XB_C1 -> C1
     var s = String(sheetName);
     s = s.replace(/^sequencedRoute_/i, "");
     s = s.replace(/_/g, "-");
     s = s.replace(/^XB-/i, "");
     return s || sheetName;
   }
-
+  function routeIdBase(sheetName) {
+    return String(sheetName).replace(/^sequencedRoute_/i, "");
+  }
   function toInt(v) {
     if (typeof v === "number") return Math.trunc(v);
     var n = parseInt(String(v).trim(), 10);
     return isNaN(n) ? null : n;
   }
-
   function shortAddress(addr) {
     if (!addr) return "(sin dirección)";
     var parts = addr.split(",").map(function (p) { return p.trim(); }).filter(Boolean);
     return parts.slice(0, 2).join(", ") || addr;
   }
+  function pad(n) { n = +n; return (n < 10 ? "0" : "") + n; }
+  function todayStamp() { var d = new Date(); return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+  function fmtTime(ms) { if (!ms) return "—"; var d = new Date(ms); return pad(d.getHours()) + ":" + pad(d.getMinutes()); }
 
-  // ---------------- Parsing ----------------
-  function parseWorkbook(workbook) {
+  function extractDate(blob) {
+    blob = String(blob || "");
+    var m = blob.match(/(20\d{2})[-_.\/](\d{1,2})[-_.\/](\d{1,2})/);
+    if (m) return m[1] + "-" + pad(m[2]) + "-" + pad(m[3]);
+    m = blob.match(/(\d{1,2})[-_.\/](\d{1,2})[-_.\/](20\d{2})/);
+    if (m) return m[3] + "-" + pad(m[2]) + "-" + pad(m[1]);
+    m = blob.match(/\b(20\d{2})(\d{2})(\d{2})\b/);
+    if (m) return m[1] + "-" + m[2] + "-" + m[3];
+    return todayStamp();
+  }
+  function extractMeta(text) {
+    text = String(text || "");
+    var meta = { distance: "", time: "" };
+    var d = text.match(/driving distance[^0-9]{0,14}([\d.,]+\s*(?:km|mi|miles|kms|m)\b)/i);
+    if (!d) d = text.match(/\bdistance[^0-9]{0,14}([\d.,]+\s*(?:km|mi|miles)\b)/i);
+    if (d) meta.distance = d[1].replace(/\s+/g, " ").trim();
+    var t = text.match(/route time[^0-9]{0,14}([0-9]{1,3}\s*(?:h|hr|hrs|hours)[^a-z0-9]{0,4}[0-9]{0,2}\s*(?:m|min|mins|minutes)?)/i);
+    if (!t) t = text.match(/route time[^0-9]{0,14}([0-9]{1,2}:[0-9]{2}(?::[0-9]{2})?)/i);
+    if (!t) t = text.match(/\btime[^0-9]{0,10}([0-9]{1,2}:[0-9]{2}(?::[0-9]{2})?)/i);
+    if (t) meta.time = t[1].replace(/\s+/g, " ").trim();
+    return meta;
+  }
+
+  // ===================== Grouping =====================
+  function groupKeyOf(s) {
+    if (s.lat && s.lng) return "geo:" + s.lat + "," + s.lng;
+    return "addr:" + (s.address || "").toLowerCase().replace(/\s+/g, " ").trim();
+  }
+  function computeGroups(stops) {
+    var groups = [];
+    var cur = null;
+    stops.forEach(function (s, i) {
+      var k = groupKeyOf(s);
+      if (cur && cur.key === k && k !== "addr:") { cur.indices.push(i); }
+      else { cur = { key: k, indices: [i] }; groups.push(cur); }
+      s._groupId = groups.length - 1;
+    });
+    return groups;
+  }
+
+  // ===================== Parsing =====================
+  function parseWorkbook(workbook, fileName) {
     var routes = [];
+    var metaBlob = String(fileName || "");
     workbook.SheetNames.forEach(function (sheetName) {
       var sheet = workbook.Sheets[sheetName];
       var rows = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: true, defval: null });
+      var row0text = (rows[0] || []).map(function (c) { return c == null ? "" : String(c); }).join(" | ");
+      metaBlob += " " + row0text;
       var stops = [];
-      // Data starts at row index 2 (row 0 = metadata, row 1 = column names)
       for (var i = 2; i < rows.length; i++) {
         var r = rows[i];
         if (!r) continue;
         var stopNum = toInt(r[0]);
-        if (stopNum === null || stopNum <= 0) continue; // skip junk rows (e.g. "OCL4" / stop 0)
+        if (stopNum === null || stopNum <= 0) continue;
         stops.push({
           stop: stopNum,
           tracking: cleanText(r[1]),
@@ -408,17 +436,29 @@
           lat: cleanText(r[9]),
           lng: cleanText(r[10]),
           zone: cleanText(r[13]),
-          delivered: false
+          status: "pending",
+          reason: "",
+          deliveredAt: null
         });
       }
-      if (stops.length === 0) return; // skip empty/non-route sheets
-      // Sort ascending by stop number — the core of the app
+      if (stops.length === 0) return;
       stops.sort(function (a, b) { return a.stop - b.stop; });
       routes.push({
         sheetName: sheetName,
+        idBase: routeIdBase(sheetName),
         label: cleanRouteLabel(sheetName),
+        meta: extractMeta(row0text),
         stops: stops
       });
+    });
+    var dateStamp = extractDate(metaBlob);
+    routes.forEach(function (r) {
+      r.dateStamp = dateStamp;
+      r.key = r.idBase + "::" + dateStamp;
+      r.fileName = fileName;
+      r.startedAt = null;
+      r.lastDeliveryAt = null;
+      r.groups = computeGroups(r.stops);
     });
     return routes;
   }
@@ -431,7 +471,7 @@
       try {
         var data = new Uint8Array(e.target.result);
         var workbook = XLSX.read(data, { type: "array" });
-        var routes = parseWorkbook(workbook);
+        var routes = parseWorkbook(workbook, file.name);
         if (!routes.length) {
           state.error = "No se encontraron rutas con paradas en este archivo.";
           render();
@@ -447,69 +487,227 @@
         render();
       }
     };
-    reader.onerror = function () {
-      state.error = "Error al leer el archivo.";
-      render();
-    };
+    reader.onerror = function () { state.error = "Error al leer el archivo."; render(); };
     reader.readAsArrayBuffer(file);
   }
 
-  // ---------------- Derived ----------------
-  function currentRoute() {
-    return state.routes[state.routeIndex] || null;
+  // ===================== Persistence =====================
+  function persistRoute(route) {
+    if (!route) return;
+    var rec = {
+      key: route.key, label: route.label, sheetName: route.sheetName, idBase: route.idBase,
+      dateStamp: route.dateStamp, fileName: route.fileName,
+      startedAt: route.startedAt, lastDeliveryAt: route.lastDeliveryAt,
+      meta: route.meta || {}, currentIndex: state.currentIndex, savedAt: Date.now(),
+      stops: route.stops.map(function (s) {
+        return {
+          stop: s.stop, tracking: s.tracking, arrival: s.arrival, timeWindow: s.timeWindow,
+          address: s.address, postal: s.postal, notes: s.notes, lat: s.lat, lng: s.lng, zone: s.zone,
+          status: s.status, reason: s.reason, deliveredAt: s.deliveredAt
+        };
+      })
+    };
+    safeSet(RT_PREFIX + route.key, JSON.stringify(rec));
   }
-  function currentStops() {
-    var r = currentRoute();
-    return r ? r.stops : [];
+  function loadRouteRecord(key) {
+    var raw = safeGet(RT_PREFIX + key);
+    if (!raw) return null;
+    try { var rec = JSON.parse(raw); return (rec && rec.stops) ? rec : null; } catch (e) { return null; }
   }
-  function deliveredCount() {
-    return currentStops().filter(function (s) { return s.delivered; }).length;
+  function mergeSaved(route, rec) {
+    route.startedAt = rec.startedAt || route.startedAt;
+    route.lastDeliveryAt = rec.lastDeliveryAt || null;
+    var byNum = {};
+    rec.stops.forEach(function (ss) { byNum[ss.stop + "|" + (ss.tracking || "")] = ss; });
+    route.stops.forEach(function (s) {
+      var saved = byNum[s.stop + "|" + (s.tracking || "")];
+      if (saved) { s.status = saved.status || "pending"; s.reason = saved.reason || ""; s.deliveredAt = saved.deliveredAt || null; }
+    });
   }
-
-  // ---------------- Actions ----------------
-  function selectRoute(i) {
-    state.routeIndex = i;
-    state.currentIndex = 0;
-    state.view = "navigate";
-    render();
+  function buildRouteFromRecord(rec) {
+    var stops = rec.stops.map(function (ss) {
+      return {
+        stop: ss.stop, tracking: ss.tracking || "", arrival: ss.arrival || "", timeWindow: ss.timeWindow || "",
+        address: ss.address || "", postal: ss.postal || "", notes: ss.notes || "", lat: ss.lat || "", lng: ss.lng || "",
+        zone: ss.zone || "", status: ss.status || "pending", reason: ss.reason || "", deliveredAt: ss.deliveredAt || null
+      };
+    });
+    var route = {
+      sheetName: rec.sheetName, idBase: rec.idBase, label: rec.label, dateStamp: rec.dateStamp,
+      key: rec.key, fileName: rec.fileName, meta: rec.meta || {},
+      startedAt: rec.startedAt || null, lastDeliveryAt: rec.lastDeliveryAt || null, stops: stops
+    };
+    route.groups = computeGroups(stops);
+    return route;
   }
-  function goToStop(i) {
-    state.currentIndex = i;
-    state.view = "navigate";
-    render();
-  }
-  function toggleDelivered() {
-    var stops = currentStops();
-    var s = stops[state.currentIndex];
-    if (!s) return;
-    if (!s.delivered) {
-      s.delivered = true;
-      // advance to next pending (or just next)
-      if (state.currentIndex < stops.length - 1) {
-        state.currentIndex++;
+  function listSavedRoutes() {
+    var out = [];
+    try {
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        if (k && k.indexOf(RT_PREFIX) === 0) {
+          var rec = loadRouteRecord(k.slice(RT_PREFIX.length));
+          if (rec) out.push(rec);
+        }
       }
-    } else {
-      s.delivered = false;
-    }
+    } catch (e) {}
+    out.sort(function (a, b) { return (b.savedAt || 0) - (a.savedAt || 0); });
+    return out;
+  }
+
+  // ===================== Derived =====================
+  function currentRoute() { return state.routes[state.routeIndex] || null; }
+  function currentStops() { var r = currentRoute(); return r ? r.stops : []; }
+  function countBy(stops, status) { return stops.filter(function (s) { return s.status === status; }).length; }
+
+  // ===================== Actions =====================
+  function ensureStarted(route) { if (!route.startedAt) route.startedAt = Date.now(); }
+
+  function openRoute(route, index, idx) {
+    state.routes = [route];
+    state.routeIndex = 0;
+    state.fileName = route.fileName || state.fileName;
+    state.currentIndex = Math.max(0, Math.min(idx || 0, route.stops.length - 1));
+    state.incidenceOpen = false;
+    state.view = "navigate";
     render();
   }
-  function prevStop() {
-    if (state.currentIndex > 0) { state.currentIndex--; render(); }
-  }
-  function nextStop() {
-    if (state.currentIndex < currentStops().length - 1) { state.currentIndex++; render(); }
+
+  function selectRoute(i) {
+    var route = state.routes[i];
+    var rec = loadRouteRecord(route.key);
+    if (rec) mergeSaved(route, rec);
+    ensureStarted(route);
+    state.routeIndex = i;
+    state.currentIndex = rec ? Math.max(0, Math.min(rec.currentIndex || 0, route.stops.length - 1)) : 0;
+    state.incidenceOpen = false;
+    state.view = "navigate";
+    persistRoute(route);
+    render();
   }
 
-  // ---------------- Render ----------------
+  function continueRoute(rec) {
+    var route = buildRouteFromRecord(rec);
+    openRoute(route, 0, rec.currentIndex || 0);
+  }
+
+  function goToStop(i) { state.currentIndex = i; state.incidenceOpen = false; state.view = "navigate"; render(); }
+  function prevStop() { if (state.currentIndex > 0) { state.currentIndex--; state.incidenceOpen = false; persistRoute(currentRoute()); render(); } }
+  function nextStop() { if (state.currentIndex < currentStops().length - 1) { state.currentIndex++; state.incidenceOpen = false; persistRoute(currentRoute()); render(); } }
+
+  function setStatus(status, reason) {
+    var route = currentRoute(); var stops = route.stops; var s = stops[state.currentIndex];
+    if (!s) return;
+    var now = Date.now();
+    if (status === "pending") { s.status = "pending"; s.reason = ""; s.deliveredAt = null; }
+    else if (status === "delivered") { s.status = "delivered"; s.reason = ""; s.deliveredAt = now; route.lastDeliveryAt = now; }
+    else if (status === "incidence") { s.status = "incidence"; s.reason = reason || "Otro"; s.deliveredAt = null; }
+    ensureStarted(route);
+    state.incidenceOpen = false;
+    if (status !== "pending" && state.currentIndex < stops.length - 1) state.currentIndex++;
+    persistRoute(route);
+    render();
+  }
+
+  function deliverGroup() {
+    var route = currentRoute(); var stops = route.stops; var s = stops[state.currentIndex];
+    var g = route.groups[s._groupId]; var now = Date.now();
+    g.indices.forEach(function (idx) {
+      if (stops[idx].status !== "delivered") { stops[idx].status = "delivered"; stops[idx].reason = ""; stops[idx].deliveredAt = now; }
+    });
+    route.lastDeliveryAt = now;
+    ensureStarted(route);
+    var last = g.indices[g.indices.length - 1];
+    if (last < stops.length - 1) state.currentIndex = last + 1;
+    state.incidenceOpen = false;
+    persistRoute(route);
+    render();
+  }
+
+  function resetRoute() {
+    var route = currentRoute(); if (!route) return;
+    if (!confirm("¿Reiniciar la ruta " + route.label + "?\nSe borrará el progreso guardado de esta jornada.")) return;
+    route.stops.forEach(function (s) { s.status = "pending"; s.reason = ""; s.deliveredAt = null; });
+    route.startedAt = null; route.lastDeliveryAt = null; state.currentIndex = 0;
+    safeDel(RT_PREFIX + route.key);
+    render();
+  }
+
+  function deleteSaved(key, label) {
+    if (!confirm("¿Borrar el progreso guardado de " + label + "?")) return;
+    safeDel(RT_PREFIX + key);
+    render();
+  }
+
+  function toggleTheme() {
+    state.theme = (state.theme === "light") ? "dark" : "light";
+    safeSet(LS_THEME, state.theme);
+    applyTheme();
+    render();
+  }
+  function applyTheme() {
+    if (state.theme === "light") document.documentElement.classList.add("light");
+    else document.documentElement.classList.remove("light");
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute("content", state.theme === "light" ? "#eef2f7" : "#0b1120");
+  }
+
+  // ===================== Shared topbar =====================
+  function topbarHTML(label) {
+    return '<div class="topbar">' +
+      '<button class="back" id="backBtn">◀ <span>' + escapeHtml(label) + '</span></button>' +
+      '<div class="tb-actions">' +
+        '<button class="icon-btn" id="searchBtn" title="Buscar paquete">🔍</button>' +
+        '<button class="icon-btn" id="listBtn" title="Lista">☰</button>' +
+        '<button class="icon-btn" id="summaryBtn" title="Resumen">📋</button>' +
+        '<button class="icon-btn" id="themeBtn" title="Tema">' + (state.theme === "light" ? "🌙" : "☀️") + '</button>' +
+      '</div>' +
+    '</div>';
+  }
+  function wireTopbar(backHandler) {
+    document.getElementById("backBtn").addEventListener("click", backHandler);
+    var sb = document.getElementById("searchBtn"); if (sb) sb.addEventListener("click", function () { state.searchOpen = true; state.searchQuery = ""; render(); });
+    var lb = document.getElementById("listBtn"); if (lb) lb.addEventListener("click", function () { state.view = "list"; render(); });
+    var smb = document.getElementById("summaryBtn"); if (smb) smb.addEventListener("click", function () { state.view = "summary"; render(); });
+    var tb = document.getElementById("themeBtn"); if (tb) tb.addEventListener("click", toggleTheme);
+  }
+  function navBack() { state.view = (state.routes.length > 1) ? "select" : "upload"; render(); }
+
+  // ===================== Render dispatch =====================
   function render() {
-    if (state.view === "upload") return renderUpload();
-    if (state.view === "select") return renderSelect();
-    if (state.view === "navigate") return renderNavigate();
-    if (state.view === "list") return renderList();
+    applyTheme();
+    if (state.view === "upload") renderUpload();
+    else if (state.view === "select") renderSelect();
+    else if (state.view === "navigate") renderNavigate();
+    else if (state.view === "list") renderList();
+    else if (state.view === "summary") renderSummary();
+    if (state.searchOpen) renderSearchOverlay();
   }
 
+  // ===================== Upload =====================
   function renderUpload() {
+    var saved = listSavedRoutes();
+    var continueHtml = "";
+    if (saved.length) {
+      var items = saved.slice(0, 6).map(function (rec) {
+        var total = rec.stops.length;
+        var done = rec.stops.filter(function (s) { return s.status === "delivered"; }).length;
+        var inc = rec.stops.filter(function (s) { return s.status === "incidence"; }).length;
+        var sub = done + "/" + total + " entregados" + (inc ? " · " + inc + " incid." : "") + " · " + escapeHtml(rec.dateStamp);
+        return '<div class="continue-item">' +
+            '<button class="continue-go" data-key="' + escapeHtml(rec.key) + '">' +
+              '<span class="continue-badge">' + escapeHtml(rec.label) + '</span>' +
+              '<span class="continue-info"><span class="continue-title">Continuar ' + escapeHtml(rec.label) + '</span>' +
+              '<span class="continue-sub">' + sub + '</span></span>' +
+            '</button>' +
+            '<button class="continue-del" data-del="' + escapeHtml(rec.key) + '" data-label="' + escapeHtml(rec.label) + '" title="Borrar progreso">✕</button>' +
+          '</div>';
+      }).join("");
+      continueHtml = '<div class="continue-wrap"><h3>Continuar jornada</h3>' + items + '</div>';
+    }
+
     app.innerHTML =
+      '<div class="mini-bar"><button class="icon-btn" id="themeBtn" title="Tema">' + (state.theme === "light" ? "🌙" : "☀️") + '</button></div>' +
       '<div class="upload">' +
         '<div class="emoji">📦</div>' +
         '<h1>Navegador de Rutas</h1>' +
@@ -522,27 +720,29 @@
           '<input type="file" id="fileInput" accept=".xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />' +
         '</label>' +
         '<div class="error-msg">' + escapeHtml(state.error) + '</div>' +
+        continueHtml +
       '</div>';
 
+    document.getElementById("themeBtn").addEventListener("click", toggleTheme);
     var input = document.getElementById("fileInput");
     var dz = document.getElementById("dropzone");
-    input.addEventListener("change", function () {
-      if (input.files && input.files[0]) handleFile(input.files[0]);
+    input.addEventListener("change", function () { if (input.files && input.files[0]) handleFile(input.files[0]); });
+    ["dragenter", "dragover"].forEach(function (ev) { dz.addEventListener(ev, function (e) { e.preventDefault(); dz.classList.add("drag"); }); });
+    ["dragleave", "drop"].forEach(function (ev) { dz.addEventListener(ev, function (e) { e.preventDefault(); dz.classList.remove("drag"); }); });
+    dz.addEventListener("drop", function (e) { e.preventDefault(); if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
+
+    Array.prototype.forEach.call(app.querySelectorAll(".continue-go"), function (b) {
+      b.addEventListener("click", function () {
+        var rec = loadRouteRecord(b.getAttribute("data-key"));
+        if (rec) continueRoute(rec); else { state.error = "No se pudo recuperar esa ruta."; render(); }
+      });
     });
-    ["dragenter", "dragover"].forEach(function (ev) {
-      dz.addEventListener(ev, function (e) { e.preventDefault(); dz.classList.add("drag"); });
-    });
-    ["dragleave", "drop"].forEach(function (ev) {
-      dz.addEventListener(ev, function (e) { e.preventDefault(); dz.classList.remove("drag"); });
-    });
-    dz.addEventListener("drop", function (e) {
-      e.preventDefault();
-      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
-        handleFile(e.dataTransfer.files[0]);
-      }
+    Array.prototype.forEach.call(app.querySelectorAll(".continue-del"), function (b) {
+      b.addEventListener("click", function () { deleteSaved(b.getAttribute("data-del"), b.getAttribute("data-label")); });
     });
   }
 
+  // ===================== Select =====================
   function renderSelect() {
     var btns = state.routes.map(function (r, i) {
       return '<button class="route-btn" data-i="' + i + '">' + escapeHtml(r.label) + '</button>';
@@ -550,7 +750,8 @@
 
     app.innerHTML =
       '<div class="select-wrap">' +
-        '<h2>Elige tu ruta</h2>' +
+        '<div class="select-head"><h2>Elige tu ruta</h2>' +
+          '<button class="icon-btn" id="themeBtn" title="Tema">' + (state.theme === "light" ? "🌙" : "☀️") + '</button></div>' +
         '<div class="count">' + state.routes.length + ' rutas disponibles · ' + escapeHtml(state.fileName) + '</div>' +
         '<div class="route-grid">' + btns + '</div>' +
         '<button class="change-file" id="changeFile">↻ Cambiar de archivo</button>' +
@@ -559,136 +760,250 @@
     Array.prototype.forEach.call(app.querySelectorAll(".route-btn"), function (b) {
       b.addEventListener("click", function () { selectRoute(parseInt(b.getAttribute("data-i"), 10)); });
     });
+    document.getElementById("themeBtn").addEventListener("click", toggleTheme);
     document.getElementById("changeFile").addEventListener("click", function () {
-      state.view = "upload";
-      state.routes = [];
-      state.routeIndex = -1;
-      state.error = "";
-      render();
+      state.view = "upload"; state.routes = []; state.routeIndex = -1; state.error = ""; render();
     });
   }
 
+  // ===================== Navigate =====================
   function renderNavigate() {
-    var route = currentRoute();
-    var stops = currentStops();
-    var total = stops.length;
+    var route = currentRoute(); var stops = route.stops; var total = stops.length;
     var s = stops[state.currentIndex];
-    var done = deliveredCount();
-    var pending = total - done;
-    var pct = total ? Math.round((done / total) * 100) : 0;
-    var allDone = total > 0 && done === total;
+    var done = countBy(stops, "delivered");
+    var inc = countBy(stops, "incidence");
+    var pending = total - done - inc;
+    var processed = done + inc;
+    var pct = total ? Math.round((processed / total) * 100) : 0;
+    var allDone = total > 0 && pending === 0;
 
-    var mapsUrl;
+    var navUrl, mapsUrl;
     if (s.lat && s.lng) {
-      mapsUrl = "https://maps.google.com/?q=" + encodeURIComponent(s.lat + "," + s.lng);
+      var coords = encodeURIComponent(s.lat + "," + s.lng);
+      navUrl = "https://www.google.com/maps/dir/?api=1&destination=" + coords + "&travelmode=driving";
+      mapsUrl = "https://maps.google.com/?q=" + coords;
     } else {
-      mapsUrl = "https://maps.google.com/?q=" + encodeURIComponent(s.address || s.postal || "");
+      var addr = encodeURIComponent(s.address || s.postal || "");
+      navUrl = "https://www.google.com/maps/dir/?api=1&destination=" + addr + "&travelmode=driving";
+      mapsUrl = "https://maps.google.com/?q=" + addr;
     }
 
-    var noteHtml = s.notes
-      ? '<div class="note-card"><div class="ico">⚠️</div><div class="note-text">' + escapeHtml(s.notes) + '</div></div>'
-      : "";
+    // group
+    var g = route.groups[s._groupId];
+    var groupHtml = "";
+    var deliverGroupHtml = "";
+    if (g && g.indices.length > 1) {
+      var allGroupDone = g.indices.every(function (idx) { return stops[idx].status === "delivered"; });
+      var pkgItems = g.indices.map(function (idx) {
+        var ps = stops[idx];
+        var icon = ps.status === "delivered" ? "✅" : ps.status === "incidence" ? "⚠️" : "📦";
+        return '<button class="pkg-item' + (idx === state.currentIndex ? " current" : "") + '" data-i="' + idx + '">' +
+          '<span class="pkg-ico">' + icon + '</span><span class="pkg-stop">#' + ps.stop + '</span>' +
+          '<span class="pkg-trk">' + escapeHtml(ps.tracking || "—") + '</span></button>';
+      }).join("");
+      groupHtml = '<div class="group-banner">📦 ' + g.indices.length + ' paquetes en esta dirección</div>' +
+        '<div class="pkg-list">' + pkgItems + '</div>';
+      if (!allGroupDone) deliverGroupHtml = '<button class="deliver-group-btn" id="deliverGroupBtn">✓ Entregar los ' + g.indices.length + ' de esta dirección</button>';
+    }
 
+    var statusBanner = "";
+    if (s.status === "incidence") statusBanner = '<div class="status-banner incidence">⚠️ Incidencia: ' + escapeHtml(s.reason || "Otro") + '</div>';
+
+    var noteHtml = s.notes ? '<div class="note-card"><div class="ico">⚠️</div><div class="note-text">' + escapeHtml(s.notes) + '</div></div>' : "";
     var zoneHtml = s.zone ? '<div class="stop-zone">Zona ' + escapeHtml(s.zone) + '</div>' : "";
 
+    // deliver / incidence area
+    var deliverHtml;
+    if (s.status === "delivered") deliverHtml = '<button class="deliver-btn undo" id="deliverBtn">↩ Desmarcar entrega</button>';
+    else deliverHtml = '<button class="deliver-btn" id="deliverBtn">✓ Entregado</button>';
+
+    var incidenceHtml;
+    if (state.incidenceOpen) {
+      incidenceHtml = '<div class="incidence-menu">' +
+        INCIDENCE_REASONS.map(function (r) { return '<button class="reason-btn" data-reason="' + escapeHtml(r) + '">⚠️ ' + escapeHtml(r) + '</button>'; }).join("") +
+        '<button class="clear-status-btn" id="cancelIncidence">Cancelar</button>' +
+      '</div>';
+    } else if (s.status === "incidence") {
+      incidenceHtml = '<button class="clear-status-btn" id="clearStatusBtn">✕ Quitar incidencia</button>';
+    } else {
+      incidenceHtml = '<button class="incidence-toggle" id="incidenceBtn">⚠️ Marcar incidencia</button>';
+    }
+
+    var cardClass = "stop-card" + (s.status === "delivered" ? " delivered" : s.status === "incidence" ? " incidence" : "");
+    var checkIcon = s.status === "delivered" ? '<span class="stop-check">✅</span>' : s.status === "incidence" ? '<span class="stop-check">⚠️</span>' : "";
+
     app.innerHTML =
-      '<div class="topbar">' +
-        '<button class="back" id="backBtn">◀ <span>' + escapeHtml(route.label) + '</span></button>' +
-        '<div class="title"></div>' +
-        '<button class="list-btn" id="listBtn">Lista ☰</button>' +
-      '</div>' +
+      topbarHTML(route.label) +
       '<div class="nav-wrap">' +
         '<div class="progress-block">' +
           '<div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%"></div></div>' +
-          (allDone
-            ? '<div class="progress-text done">✅ ¡Ruta completada!</div>'
-            : '<div class="progress-text">' + done + ' entregados · ' + pending + ' pendientes</div>') +
+          (allDone ? '<div class="progress-text done">✅ ¡Ruta completada!</div>'
+            : '<div class="progress-text">' + done + ' entregados' + (inc ? ' · ' + inc + ' incidencias' : '') + ' · ' + pending + ' pendientes</div>') +
         '</div>' +
 
-        '<div class="stop-card' + (s.delivered ? ' delivered' : '') + '">' +
-          '<div class="stop-head">' +
-            '<span class="stop-num">#' + s.stop + '</span>' +
-            '<span class="stop-of">de ' + total + '</span>' +
-            (s.delivered ? '<span class="stop-check">✅</span>' : '') +
-          '</div>' +
+        '<div class="' + cardClass + '">' +
+          '<div class="stop-head"><span class="stop-num">#' + s.stop + '</span><span class="stop-of">de ' + total + '</span>' + checkIcon + '</div>' +
           '<div class="stop-address">' + escapeHtml(s.address || "(sin dirección)") + '</div>' +
           (s.postal ? '<div class="stop-postal">📮 ' + escapeHtml(s.postal) + '</div>' : '') +
-          zoneHtml +
+          zoneHtml + statusBanner + groupHtml +
         '</div>' +
 
-        '<div class="info-card">' +
-          '<div class="info-label">Tracking ID</div>' +
-          '<div class="tracking-id">' + escapeHtml(s.tracking || "—") + '</div>' +
-        '</div>' +
-
-        (s.timeWindow ?
-        '<div class="info-card">' +
-          '<div class="info-label">Horario de entrega</div>' +
-          '<div class="time-row"><span class="ico">🕐</span><span class="time-val">' + escapeHtml(s.timeWindow) + '</span></div>' +
-        '</div>' : '') +
-
+        '<div class="info-card"><div class="info-label">Tracking ID</div><div class="tracking-id">' + escapeHtml(s.tracking || "—") + '</div></div>' +
+        (s.timeWindow ? '<div class="info-card"><div class="info-label">Horario de entrega</div><div class="time-row"><span class="ico">🕐</span><span class="time-val">' + escapeHtml(s.timeWindow) + '</span></div></div>' : '') +
         noteHtml +
 
-        '<a class="maps-btn" id="mapsBtn" href="' + escapeHtml(mapsUrl) + '" target="_blank" rel="noopener">🗺️ Abrir en Google Maps</a>' +
+        '<a class="action-btn nav-btn" id="navBtn" href="' + escapeHtml(navUrl) + '" target="_blank" rel="noopener">🧭 Navegar (conducción)</a>' +
+        '<a class="action-btn maps-btn" id="mapsBtn" href="' + escapeHtml(mapsUrl) + '" target="_blank" rel="noopener">🗺️ Abrir en Google Maps</a>' +
 
-        '<button class="deliver-btn' + (s.delivered ? ' undo' : '') + '" id="deliverBtn">' +
-          (s.delivered ? '↩ Desmarcar' : '✓ Entregado') +
-        '</button>' +
+        deliverGroupHtml +
+        deliverHtml +
+        incidenceHtml +
 
         '<div class="nav-controls">' +
           '<button class="arrow" id="prevBtn"' + (state.currentIndex === 0 ? ' disabled' : '') + '>◀</button>' +
           '<span class="pos">' + (state.currentIndex + 1) + ' / ' + total + '</span>' +
           '<button class="arrow" id="nextBtn"' + (state.currentIndex === total - 1 ? ' disabled' : '') + '>▶</button>' +
         '</div>' +
+
+        '<button class="reset-link" id="resetBtn">Reiniciar ruta</button>' +
       '</div>';
 
-    document.getElementById("backBtn").addEventListener("click", function () {
-      state.view = "select";
-      render();
-    });
-    document.getElementById("listBtn").addEventListener("click", function () {
-      state.view = "list";
-      render();
-    });
-    document.getElementById("deliverBtn").addEventListener("click", toggleDelivered);
+    wireTopbar(navBack);
+    document.getElementById("deliverBtn").addEventListener("click", function () { setStatus(s.status === "delivered" ? "pending" : "delivered"); });
     document.getElementById("prevBtn").addEventListener("click", prevStop);
     document.getElementById("nextBtn").addEventListener("click", nextStop);
+    document.getElementById("resetBtn").addEventListener("click", resetRoute);
+
+    var dg = document.getElementById("deliverGroupBtn"); if (dg) dg.addEventListener("click", deliverGroup);
+    var ib = document.getElementById("incidenceBtn"); if (ib) ib.addEventListener("click", function () { state.incidenceOpen = true; render(); });
+    var ci = document.getElementById("cancelIncidence"); if (ci) ci.addEventListener("click", function () { state.incidenceOpen = false; render(); });
+    var cs = document.getElementById("clearStatusBtn"); if (cs) cs.addEventListener("click", function () { setStatus("pending"); });
+    Array.prototype.forEach.call(app.querySelectorAll(".reason-btn"), function (b) {
+      b.addEventListener("click", function () {
+        var reason = b.getAttribute("data-reason");
+        if (reason === "Otro") { var t = prompt("Describe la incidencia (opcional):", ""); if (t && t.trim()) reason = "Otro: " + t.trim(); }
+        setStatus("incidence", reason);
+      });
+    });
+    Array.prototype.forEach.call(app.querySelectorAll(".pkg-item"), function (b) {
+      b.addEventListener("click", function () { goToStop(parseInt(b.getAttribute("data-i"), 10)); });
+    });
   }
 
+  // ===================== List =====================
   function renderList() {
-    var route = currentRoute();
-    var stops = currentStops();
+    var route = currentRoute(); var stops = route.stops;
     var items = stops.map(function (s, i) {
-      var circle = s.delivered ? "✓" : s.stop;
+      var g = route.groups[s._groupId];
+      var groupBadge = (g && g.indices.length > 1) ? '<span class="list-badge">📦 ' + g.indices.length + '</span>' : "";
+      var circle = s.status === "delivered" ? "✓" : s.status === "incidence" ? "!" : s.stop;
       var meta = [];
       if (s.tracking) meta.push('<span class="mono">' + escapeHtml(s.tracking) + '</span>');
       if (s.timeWindow) meta.push(escapeHtml(s.timeWindow));
-      return '<button class="list-item' + (s.delivered ? ' delivered' : '') + '" data-i="' + i + '">' +
+      if (s.status === "incidence") meta.push(escapeHtml(s.reason || "Incidencia"));
+      var cls = "list-item" + (s.status === "delivered" ? " delivered" : s.status === "incidence" ? " incidence" : "");
+      return '<button class="' + cls + '" data-i="' + i + '">' +
         '<div class="list-circle">' + circle + '</div>' +
-        '<div class="list-body">' +
-          '<div class="list-addr">' + escapeHtml(shortAddress(s.address)) + '</div>' +
-          '<div class="list-meta">' + meta.join(' · ') + '</div>' +
-        '</div>' +
+        '<div class="list-body"><div class="list-addr">' + escapeHtml(shortAddress(s.address)) + '</div>' +
+          '<div class="list-meta">' + meta.join(' · ') + '</div></div>' + groupBadge +
       '</button>';
     }).join("");
 
-    app.innerHTML =
-      '<div class="topbar">' +
-        '<button class="back" id="backBtn">◀ <span>' + escapeHtml(route.label) + '</span></button>' +
-        '<div class="title">Todas las paradas</div>' +
-      '</div>' +
-      '<div class="list-wrap">' + items + '</div>';
-
-    document.getElementById("backBtn").addEventListener("click", function () {
-      state.view = "navigate";
-      render();
-    });
+    app.innerHTML = topbarHTML(route.label) + '<div class="list-wrap">' + items + '</div>';
+    wireTopbar(function () { state.view = "navigate"; render(); });
     Array.prototype.forEach.call(app.querySelectorAll(".list-item"), function (b) {
       b.addEventListener("click", function () { goToStop(parseInt(b.getAttribute("data-i"), 10)); });
     });
   }
 
-  // ---------------- Init ----------------
+  // ===================== Summary =====================
+  function renderSummary() {
+    var route = currentRoute(); var stops = route.stops;
+    var packages = stops.length;
+    var direcciones = route.groups.length;
+    var done = countBy(stops, "delivered");
+    var inc = countBy(stops, "incidence");
+    var pending = packages - done - inc;
+    var byReason = {};
+    stops.forEach(function (s) { if (s.status === "incidence") { var r = s.reason || "Otro"; byReason[r] = (byReason[r] || 0) + 1; } });
+    var reasonRows = Object.keys(byReason).map(function (r) {
+      return '<div class="sum-row"><span class="k">⚠️ ' + escapeHtml(r) + '</span><span class="v">' + byReason[r] + '</span></div>';
+    }).join("") || '<div class="sum-row"><span class="k">Sin incidencias</span><span class="v">0</span></div>';
+
+    var meta = route.meta || {};
+    app.innerHTML =
+      topbarHTML(route.label) +
+      '<div class="summary-wrap">' +
+        '<h2>📋 Resumen · ' + escapeHtml(route.label) + '</h2>' +
+        '<div class="sum-grid">' +
+          '<div class="sum-card"><div class="sum-num">' + packages + '</div><div class="sum-label">Paquetes</div></div>' +
+          '<div class="sum-card"><div class="sum-num">' + direcciones + '</div><div class="sum-label">Paradas (direcciones)</div></div>' +
+          '<div class="sum-card"><div class="sum-num green">' + done + '</div><div class="sum-label">Entregados</div></div>' +
+          '<div class="sum-card"><div class="sum-num amber">' + inc + '</div><div class="sum-label">Incidencias</div></div>' +
+        '</div>' +
+        '<div class="sum-card full"><div class="info-label">Incidencias por motivo</div>' + reasonRows + '</div>' +
+        '<div class="sum-card full">' +
+          '<div class="sum-row"><span class="k">Pendientes</span><span class="v">' + pending + '</span></div>' +
+          '<div class="sum-row"><span class="k">Hora de inicio</span><span class="v">' + fmtTime(route.startedAt) + '</span></div>' +
+          '<div class="sum-row"><span class="k">Última entrega</span><span class="v">' + fmtTime(route.lastDeliveryAt) + '</span></div>' +
+          '<div class="sum-row"><span class="k">Distancia (Excel)</span><span class="v">' + (meta.distance ? escapeHtml(meta.distance) : "—") + '</span></div>' +
+          '<div class="sum-row"><span class="k">Tiempo estimado (Excel)</span><span class="v">' + (meta.time ? escapeHtml(meta.time) : "—") + '</span></div>' +
+        '</div>' +
+        '<button class="reset-link" id="resetBtn">Reiniciar ruta</button>' +
+      '</div>';
+
+    wireTopbar(function () { state.view = "navigate"; render(); });
+    document.getElementById("resetBtn").addEventListener("click", function () { resetRoute(); });
+  }
+
+  // ===================== Search overlay =====================
+  function searchResultsHTML(route, q) {
+    if (!route) return '<div class="search-empty">Carga una ruta primero.</div>';
+    if (!q) return '<div class="search-empty">Escribe o pega un Tracking ID…</div>';
+    var ql = q.toLowerCase(); var rows = [];
+    route.stops.forEach(function (s, i) { if ((s.tracking || "").toLowerCase().indexOf(ql) >= 0) rows.push({ s: s, i: i }); });
+    if (!rows.length) return '<div class="search-empty">❌ No está en esta ruta.</div>';
+    return rows.map(function (r) {
+      var st = r.s.status;
+      var icon = st === "delivered" ? "✅" : st === "incidence" ? "⚠️" : "#" + r.s.stop;
+      return '<button class="search-result" data-i="' + r.i + '">' +
+        '<span class="sr-stop">' + icon + '</span>' +
+        '<span class="sr-body"><span class="sr-trk">' + escapeHtml(r.s.tracking || "—") + '</span>' +
+        '<span class="sr-addr">' + escapeHtml(shortAddress(r.s.address)) + '</span></span></button>';
+    }).join("");
+  }
+  function wireSearchResults() {
+    Array.prototype.forEach.call(app.querySelectorAll(".search-result"), function (b) {
+      b.addEventListener("click", function () { state.searchOpen = false; state.searchQuery = ""; goToStop(parseInt(b.getAttribute("data-i"), 10)); });
+    });
+  }
+  function renderSearchOverlay() {
+    var route = currentRoute();
+    var html =
+      '<div class="overlay" id="searchOverlay"><div class="overlay-inner">' +
+        '<div class="search-bar">' +
+          '<input id="searchInput" type="search" inputmode="search" autocomplete="off" placeholder="Buscar Tracking ID…" value="' + escapeHtml(state.searchQuery) + '" />' +
+          '<button class="search-close" id="searchClose">Cerrar</button>' +
+        '</div>' +
+        '<div class="search-results" id="searchResults">' + searchResultsHTML(route, state.searchQuery.trim()) + '</div>' +
+      '</div></div>';
+    app.insertAdjacentHTML("beforeend", html);
+
+    var input = document.getElementById("searchInput");
+    var resultsEl = document.getElementById("searchResults");
+    document.getElementById("searchClose").addEventListener("click", function () { state.searchOpen = false; state.searchQuery = ""; render(); });
+    input.addEventListener("input", function () {
+      state.searchQuery = input.value;
+      resultsEl.innerHTML = searchResultsHTML(route, state.searchQuery.trim());
+      wireSearchResults();
+    });
+    wireSearchResults();
+    try { input.focus(); } catch (e) {}
+  }
+
+  // ===================== Init =====================
+  state.theme = (safeGet(LS_THEME) === "light") ? "light" : "dark";
+  applyTheme();
   render();
   </script>
 </body>
