@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0b1120" />
+  <title>Navegador de Rutas</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      --bg: #0b1120;
+      --surface: #131c2e;
+      --card: #1a2540;
+      --border: #253354;
+      --accent: #3b82f6;
+      --green: #16a34a;
+      --green-bright: #22c55e;
+      --amber: #d97706;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --white: #f8fafc;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.4;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body { min-height: 100vh; }
+
+    .app {
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      color: var(--text);
+      font-size: 1rem;
+    }
+
+    .hidden { display: none !important; }
+
+    /* ---------- UPLOAD ---------- */
+    .upload {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 20px;
+      text-align: center;
+      gap: 8px;
+    }
+    .upload .emoji { font-size: 4rem; line-height: 1; margin-bottom: 8px; }
+    .upload h1 { font-size: 1.7rem; color: var(--white); font-weight: 700; }
+    .upload .subtitle { color: var(--muted); font-size: 1rem; margin-bottom: 24px; }
+
+    .dropzone {
+      width: 100%;
+      border: 2px dashed var(--border);
+      border-radius: 20px;
+      background: var(--surface);
+      padding: 44px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      transition: border-color .15s, background .15s;
+    }
+    .dropzone.drag { border-color: var(--accent); background: var(--card); }
+    .dropzone .dz-icon { font-size: 2.4rem; }
+    .dropzone .dz-title { color: var(--white); font-weight: 600; font-size: 1.05rem; }
+    .dropzone .dz-hint { color: var(--muted); font-size: .85rem; }
+    .dropzone .dz-btn {
+      margin-top: 8px;
+      background: var(--accent);
+      color: var(--white);
+      font-weight: 600;
+      padding: 14px 28px;
+      border-radius: 14px;
+      font-size: 1rem;
+    }
+    input[type="file"] { display: none; }
+    .error-msg { color: #f87171; font-size: .9rem; margin-top: 14px; min-height: 1.2em; }
+
+    /* ---------- HEADER (shared) ---------- */
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .topbar .back {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .topbar .title {
+      flex: 1;
+      font-weight: 700;
+      color: var(--white);
+      font-size: 1.05rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .topbar .list-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    /* ---------- SELECT ---------- */
+    .select-wrap { flex: 1; padding: 20px 16px 40px; }
+    .select-wrap h2 { color: var(--white); font-size: 1.4rem; margin-bottom: 4px; }
+    .select-wrap .count { color: var(--muted); font-size: .92rem; margin-bottom: 20px; }
+    .route-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .route-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 8px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--white);
+      transition: background .12s, border-color .12s;
+    }
+    .route-btn:active { background: var(--accent); border-color: var(--accent); }
+    .change-file {
+      margin-top: 26px;
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    /* ---------- NAVIGATE ---------- */
+    .nav-wrap { flex: 1; padding: 16px 16px 28px; display: flex; flex-direction: column; gap: 14px; }
+
+    .progress-block { display: flex; flex-direction: column; gap: 8px; }
+    .progress-bar {
+      width: 100%;
+      height: 10px;
+      background: var(--card);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), var(--green-bright));
+      border-radius: 999px;
+      transition: width .25s ease;
+    }
+    .progress-text { font-size: .9rem; color: var(--muted); text-align: center; }
+    .progress-text.done { color: var(--green-bright); font-weight: 700; }
+
+    .stop-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 22px;
+      transition: background .2s, border-color .2s;
+    }
+    .stop-card.delivered { background: rgba(22,163,74,.16); border-color: var(--green); }
+    .stop-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 14px; }
+    .stop-num { font-size: 3.2rem; font-weight: 800; color: var(--white); line-height: 1; }
+    .stop-of { color: var(--muted); font-size: 1rem; }
+    .stop-check { margin-left: auto; font-size: 2rem; }
+    .stop-address { font-size: 1.35rem; font-weight: 600; color: var(--white); margin-bottom: 8px; }
+    .stop-postal { color: var(--muted); font-size: 1rem; }
+    .stop-zone { color: var(--muted); font-size: .85rem; margin-top: 2px; }
+
+    .info-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+    }
+    .info-label { color: var(--muted); font-size: .78rem; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+    .tracking-id {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--white);
+      word-break: break-all;
+    }
+    .time-row { display: flex; align-items: center; gap: 10px; }
+    .time-row .ico { font-size: 1.5rem; }
+    .time-val { font-size: 1.25rem; font-weight: 700; color: var(--white); }
+
+    .note-card {
+      background: rgba(217,119,6,.15);
+      border: 1px solid var(--amber);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      gap: 10px;
+    }
+    .note-card .ico { font-size: 1.4rem; flex-shrink: 0; }
+    .note-card .note-text { color: #fcd9a8; font-size: 1rem; }
+
+    .maps-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      font-weight: 600;
+      font-size: 1.05rem;
+      color: var(--white);
+      text-decoration: none;
+    }
+    .maps-btn:active { background: var(--card); }
+
+    .deliver-btn {
+      background: var(--green);
+      color: var(--white);
+      font-weight: 800;
+      font-size: 1.3rem;
+      padding: 20px;
+      border-radius: 18px;
+      width: 100%;
+    }
+    .deliver-btn:active { background: var(--green-bright); }
+    .deliver-btn.undo { background: var(--card); border: 1px solid var(--border); color: var(--text); font-weight: 600; font-size: 1.1rem; }
+
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .nav-controls .arrow {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--white);
+    }
+    .nav-controls .arrow:disabled { opacity: .35; }
+    .nav-controls .pos {
+      flex-shrink: 0;
+      min-width: 80px;
+      text-align: center;
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    /* ---------- LIST ---------- */
+    .list-wrap { flex: 1; padding: 12px 12px 32px; display: flex; flex-direction: column; gap: 8px; }
+    .list-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      text-align: left;
+      width: 100%;
+    }
+    .list-item.delivered { opacity: .5; }
+    .list-circle {
+      flex-shrink: 0;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: var(--white);
+    }
+    .list-item.delivered .list-circle { background: var(--green); border-color: var(--green); }
+    .list-body { flex: 1; overflow: hidden; }
+    .list-addr { color: var(--white); font-weight: 600; font-size: 1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .list-meta { color: var(--muted); font-size: .82rem; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .list-meta .mono { font-family: ui-monospace, Menlo, monospace; }
+  </style>
+</head>
+<body>
+  <div class="app" id="app"></div>
+
+  <script>
+  "use strict";
+
+  // ---------------- State (in-memory only) ----------------
+  var state = {
+    view: "upload",        // upload | select | navigate | list
+    fileName: "",
+    routes: [],            // [{ sheetName, label, stops: [...] }]
+    routeIndex: -1,
+    currentIndex: 0,
+    error: ""
+  };
+
+  var app = document.getElementById("app");
+
+  // ---------------- Helpers ----------------
+  function escapeHtml(str) {
+    if (str === null || str === undefined) return "";
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function cleanText(v) {
+    if (v === null || v === undefined) return "";
+    var s = String(v).trim();
+    if (s.toLowerCase() === "nan" || s === "") return "";
+    return s;
+  }
+
+  function cleanTimeWindow(v) {
+    var s = cleanText(v);
+    if (!s) return "";
+    // "08:00:00 - 14:00:00" -> "08:00 - 14:00"
+    return s.replace(/(\d{1,2}:\d{2}):\d{2}/g, "$1");
+  }
+
+  function cleanRouteLabel(sheetName) {
+    // sequencedRoute_XB_C1 -> C1
+    var s = String(sheetName);
+    s = s.replace(/^sequencedRoute_/i, "");
+    s = s.replace(/_/g, "-");
+    s = s.replace(/^XB-/i, "");
+    return s || sheetName;
+  }
+
+  function toInt(v) {
+    if (typeof v === "number") return Math.trunc(v);
+    var n = parseInt(String(v).trim(), 10);
+    return isNaN(n) ? null : n;
+  }
+
+  function shortAddress(addr) {
+    if (!addr) return "(sin dirección)";
+    var parts = addr.split(",").map(function (p) { return p.trim(); }).filter(Boolean);
+    return parts.slice(0, 2).join(", ") || addr;
+  }
+
+  // ---------------- Parsing ----------------
+  function parseWorkbook(workbook) {
+    var routes = [];
+    workbook.SheetNames.forEach(function (sheetName) {
+      var sheet = workbook.Sheets[sheetName];
+      var rows = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: true, defval: null });
+      var stops = [];
+      // Data starts at row index 2 (row 0 = metadata, row 1 = column names)
+      for (var i = 2; i < rows.length; i++) {
+        var r = rows[i];
+        if (!r) continue;
+        var stopNum = toInt(r[0]);
+        if (stopNum === null || stopNum <= 0) continue; // skip junk rows (e.g. "OCL4" / stop 0)
+        stops.push({
+          stop: stopNum,
+          tracking: cleanText(r[1]),
+          arrival: cleanText(r[3]),
+          timeWindow: cleanTimeWindow(r[4]),
+          address: cleanText(r[5]),
+          postal: cleanText(r[6]),
+          notes: cleanText(r[8]),
+          lat: cleanText(r[9]),
+          lng: cleanText(r[10]),
+          zone: cleanText(r[13]),
+          delivered: false
+        });
+      }
+      if (stops.length === 0) return; // skip empty/non-route sheets
+      // Sort ascending by stop number — the core of the app
+      stops.sort(function (a, b) { return a.stop - b.stop; });
+      routes.push({
+        sheetName: sheetName,
+        label: cleanRouteLabel(sheetName),
+        stops: stops
+      });
+    });
+    return routes;
+  }
+
+  function handleFile(file) {
+    state.error = "";
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      try {
+        var data = new Uint8Array(e.target.result);
+        var workbook = XLSX.read(data, { type: "array" });
+        var routes = parseWorkbook(workbook);
+        if (!routes.length) {
+          state.error = "No se encontraron rutas con paradas en este archivo.";
+          render();
+          return;
+        }
+        state.fileName = file.name;
+        state.routes = routes;
+        state.view = "select";
+        render();
+      } catch (err) {
+        console.error(err);
+        state.error = "No se pudo leer el archivo. ¿Es un .xls / .xlsx válido?";
+        render();
+      }
+    };
+    reader.onerror = function () {
+      state.error = "Error al leer el archivo.";
+      render();
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  // ---------------- Derived ----------------
+  function currentRoute() {
+    return state.routes[state.routeIndex] || null;
+  }
+  function currentStops() {
+    var r = currentRoute();
+    return r ? r.stops : [];
+  }
+  function deliveredCount() {
+    return currentStops().filter(function (s) { return s.delivered; }).length;
+  }
+
+  // ---------------- Actions ----------------
+  function selectRoute(i) {
+    state.routeIndex = i;
+    state.currentIndex = 0;
+    state.view = "navigate";
+    render();
+  }
+  function goToStop(i) {
+    state.currentIndex = i;
+    state.view = "navigate";
+    render();
+  }
+  function toggleDelivered() {
+    var stops = currentStops();
+    var s = stops[state.currentIndex];
+    if (!s) return;
+    if (!s.delivered) {
+      s.delivered = true;
+      // advance to next pending (or just next)
+      if (state.currentIndex < stops.length - 1) {
+        state.currentIndex++;
+      }
+    } else {
+      s.delivered = false;
+    }
+    render();
+  }
+  function prevStop() {
+    if (state.currentIndex > 0) { state.currentIndex--; render(); }
+  }
+  function nextStop() {
+    if (state.currentIndex < currentStops().length - 1) { state.currentIndex++; render(); }
+  }
+
+  // ---------------- Render ----------------
+  function render() {
+    if (state.view === "upload") return renderUpload();
+    if (state.view === "select") return renderSelect();
+    if (state.view === "navigate") return renderNavigate();
+    if (state.view === "list") return renderList();
+  }
+
+  function renderUpload() {
+    app.innerHTML =
+      '<div class="upload">' +
+        '<div class="emoji">📦</div>' +
+        '<h1>Navegador de Rutas</h1>' +
+        '<div class="subtitle">Sube el archivo XLS diario de Amazon</div>' +
+        '<label class="dropzone" id="dropzone">' +
+          '<div class="dz-icon">📄</div>' +
+          '<div class="dz-title">Arrastra el archivo aquí</div>' +
+          '<div class="dz-hint">o toca para seleccionar (.xls / .xlsx)</div>' +
+          '<span class="dz-btn">Seleccionar archivo</span>' +
+          '<input type="file" id="fileInput" accept=".xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />' +
+        '</label>' +
+        '<div class="error-msg">' + escapeHtml(state.error) + '</div>' +
+      '</div>';
+
+    var input = document.getElementById("fileInput");
+    var dz = document.getElementById("dropzone");
+    input.addEventListener("change", function () {
+      if (input.files && input.files[0]) handleFile(input.files[0]);
+    });
+    ["dragenter", "dragover"].forEach(function (ev) {
+      dz.addEventListener(ev, function (e) { e.preventDefault(); dz.classList.add("drag"); });
+    });
+    ["dragleave", "drop"].forEach(function (ev) {
+      dz.addEventListener(ev, function (e) { e.preventDefault(); dz.classList.remove("drag"); });
+    });
+    dz.addEventListener("drop", function (e) {
+      e.preventDefault();
+      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
+        handleFile(e.dataTransfer.files[0]);
+      }
+    });
+  }
+
+  function renderSelect() {
+    var btns = state.routes.map(function (r, i) {
+      return '<button class="route-btn" data-i="' + i + '">' + escapeHtml(r.label) + '</button>';
+    }).join("");
+
+    app.innerHTML =
+      '<div class="select-wrap">' +
+        '<h2>Elige tu ruta</h2>' +
+        '<div class="count">' + state.routes.length + ' rutas disponibles · ' + escapeHtml(state.fileName) + '</div>' +
+        '<div class="route-grid">' + btns + '</div>' +
+        '<button class="change-file" id="changeFile">↻ Cambiar de archivo</button>' +
+      '</div>';
+
+    Array.prototype.forEach.call(app.querySelectorAll(".route-btn"), function (b) {
+      b.addEventListener("click", function () { selectRoute(parseInt(b.getAttribute("data-i"), 10)); });
+    });
+    document.getElementById("changeFile").addEventListener("click", function () {
+      state.view = "upload";
+      state.routes = [];
+      state.routeIndex = -1;
+      state.error = "";
+      render();
+    });
+  }
+
+  function renderNavigate() {
+    var route = currentRoute();
+    var stops = currentStops();
+    var total = stops.length;
+    var s = stops[state.currentIndex];
+    var done = deliveredCount();
+    var pending = total - done;
+    var pct = total ? Math.round((done / total) * 100) : 0;
+    var allDone = total > 0 && done === total;
+
+    var mapsUrl;
+    if (s.lat && s.lng) {
+      mapsUrl = "https://maps.google.com/?q=" + encodeURIComponent(s.lat + "," + s.lng);
+    } else {
+      mapsUrl = "https://maps.google.com/?q=" + encodeURIComponent(s.address || s.postal || "");
+    }
+
+    var noteHtml = s.notes
+      ? '<div class="note-card"><div class="ico">⚠️</div><div class="note-text">' + escapeHtml(s.notes) + '</div></div>'
+      : "";
+
+    var zoneHtml = s.zone ? '<div class="stop-zone">Zona ' + escapeHtml(s.zone) + '</div>' : "";
+
+    app.innerHTML =
+      '<div class="topbar">' +
+        '<button class="back" id="backBtn">◀ <span>' + escapeHtml(route.label) + '</span></button>' +
+        '<div class="title"></div>' +
+        '<button class="list-btn" id="listBtn">Lista ☰</button>' +
+      '</div>' +
+      '<div class="nav-wrap">' +
+        '<div class="progress-block">' +
+          '<div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%"></div></div>' +
+          (allDone
+            ? '<div class="progress-text done">✅ ¡Ruta completada!</div>'
+            : '<div class="progress-text">' + done + ' entregados · ' + pending + ' pendientes</div>') +
+        '</div>' +
+
+        '<div class="stop-card' + (s.delivered ? ' delivered' : '') + '">' +
+          '<div class="stop-head">' +
+            '<span class="stop-num">#' + s.stop + '</span>' +
+            '<span class="stop-of">de ' + total + '</span>' +
+            (s.delivered ? '<span class="stop-check">✅</span>' : '') +
+          '</div>' +
+          '<div class="stop-address">' + escapeHtml(s.address || "(sin dirección)") + '</div>' +
+          (s.postal ? '<div class="stop-postal">📮 ' + escapeHtml(s.postal) + '</div>' : '') +
+          zoneHtml +
+        '</div>' +
+
+        '<div class="info-card">' +
+          '<div class="info-label">Tracking ID</div>' +
+          '<div class="tracking-id">' + escapeHtml(s.tracking || "—") + '</div>' +
+        '</div>' +
+
+        (s.timeWindow ?
+        '<div class="info-card">' +
+          '<div class="info-label">Horario de entrega</div>' +
+          '<div class="time-row"><span class="ico">🕐</span><span class="time-val">' + escapeHtml(s.timeWindow) + '</span></div>' +
+        '</div>' : '') +
+
+        noteHtml +
+
+        '<a class="maps-btn" id="mapsBtn" href="' + escapeHtml(mapsUrl) + '" target="_blank" rel="noopener">🗺️ Abrir en Google Maps</a>' +
+
+        '<button class="deliver-btn' + (s.delivered ? ' undo' : '') + '" id="deliverBtn">' +
+          (s.delivered ? '↩ Desmarcar' : '✓ Entregado') +
+        '</button>' +
+
+        '<div class="nav-controls">' +
+          '<button class="arrow" id="prevBtn"' + (state.currentIndex === 0 ? ' disabled' : '') + '>◀</button>' +
+          '<span class="pos">' + (state.currentIndex + 1) + ' / ' + total + '</span>' +
+          '<button class="arrow" id="nextBtn"' + (state.currentIndex === total - 1 ? ' disabled' : '') + '>▶</button>' +
+        '</div>' +
+      '</div>';
+
+    document.getElementById("backBtn").addEventListener("click", function () {
+      state.view = "select";
+      render();
+    });
+    document.getElementById("listBtn").addEventListener("click", function () {
+      state.view = "list";
+      render();
+    });
+    document.getElementById("deliverBtn").addEventListener("click", toggleDelivered);
+    document.getElementById("prevBtn").addEventListener("click", prevStop);
+    document.getElementById("nextBtn").addEventListener("click", nextStop);
+  }
+
+  function renderList() {
+    var route = currentRoute();
+    var stops = currentStops();
+    var items = stops.map(function (s, i) {
+      var circle = s.delivered ? "✓" : s.stop;
+      var meta = [];
+      if (s.tracking) meta.push('<span class="mono">' + escapeHtml(s.tracking) + '</span>');
+      if (s.timeWindow) meta.push(escapeHtml(s.timeWindow));
+      return '<button class="list-item' + (s.delivered ? ' delivered' : '') + '" data-i="' + i + '">' +
+        '<div class="list-circle">' + circle + '</div>' +
+        '<div class="list-body">' +
+          '<div class="list-addr">' + escapeHtml(shortAddress(s.address)) + '</div>' +
+          '<div class="list-meta">' + meta.join(' · ') + '</div>' +
+        '</div>' +
+      '</button>';
+    }).join("");
+
+    app.innerHTML =
+      '<div class="topbar">' +
+        '<button class="back" id="backBtn">◀ <span>' + escapeHtml(route.label) + '</span></button>' +
+        '<div class="title">Todas las paradas</div>' +
+      '</div>' +
+      '<div class="list-wrap">' + items + '</div>';
+
+    document.getElementById("backBtn").addEventListener("click", function () {
+      state.view = "navigate";
+      render();
+    });
+    Array.prototype.forEach.call(app.querySelectorAll(".list-item"), function (b) {
+      b.addEventListener("click", function () { goToStop(parseInt(b.getAttribute("data-i"), 10)); });
+    });
+  }
+
+  // ---------------- Init ----------------
+  render();
+  </script>
+</body>
+</html>
